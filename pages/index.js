@@ -1,13 +1,13 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
-import { Button, FormControl, Input, Wrap, WrapItem } from '@chakra-ui/react';
+import { Box, Button, Input, Wrap, WrapItem } from '@chakra-ui/react';
 import { motion } from "framer-motion";
 
 import CharacterCard from '../components/CharacterCard';
 
 const rickAndMortyAPI = `https://rickandmortyapi.com/api/character/`;
 const MotionBox = motion(WrapItem);
-
+ 
 export async function getServerSideProps() {
   const res = await fetch(rickAndMortyAPI);
   const data = await res.json();
@@ -45,11 +45,11 @@ useEffect(() => {
       return;
     }
 
-    updateResults(prev => {
-      return [
-        ...prev,
-        ...nextData.results
-      ]
+    updateResults(results => { 
+      return [ 
+        ...results, 
+        ...nextData.results 
+      ] 
     });
   }
 
@@ -57,23 +57,21 @@ useEffect(() => {
 }, [current]);
 
 function handleLoadMore() {
-  updatePage(prev => {
-    return {
-      ...prev,
-      current: page?.next
-    }
+  updatePage({ 
+    ...page, 
+    current: page?.next 
   });
 }
-
-function handleOnSubmitSearch(e) {
+ 
+function handleSubmitSearch(e) {
   e.preventDefault();
-
   const { currentTarget = {} } = e;
+  
   const fields = Array.from(currentTarget?.elements);
   const fieldQuery = fields.find(field => field.name === 'query');
-
+  
   const value = fieldQuery.value || '';
-  const endpoint = `https://rickandmortyapi.com/api/character/?name=${value}`;
+  const endpoint = `${rickAndMortyAPI}?name=${value}`;
 
   updatePage({
     current: endpoint
@@ -87,9 +85,10 @@ function handleOnSubmitSearch(e) {
         <meta name="description" content="A Rick and Morty Character guide, using the Rick and Morty API: https://rickandmortyapi.com"/>
         <link rel="icon" href="/favicon.ico" />
       </Head>   
-      <FormControl className="search" onSubmit={handleOnSubmitSearch}
-        display="flex"
-        maxW="500px"
+
+      <Box as="form" onSubmit={handleSubmitSearch} display="flex"
+        maxW="90%"
+        w='300px'
         mt={5}
       >
         <Input 
@@ -101,13 +100,14 @@ function handleOnSubmitSearch(e) {
           background="#f3e1dd"
         />
         <Button 
+          type="submit"
           borderStartRadius="0" 
           borderEndRadius="10px" 
           background="#89023e" 
           color="#f3e1dd"
           _hover={{ color: "gray.500" }}
         >Search</Button>
-      </FormControl>
+      </Box>
 
       <Wrap py={10} maxW="1250px" spacing={10} justify="center">
         {results.map(character => (
